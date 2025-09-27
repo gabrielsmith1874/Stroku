@@ -1,6 +1,7 @@
 package com.stremio.bridge
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +13,7 @@ import com.stremio.bridge.adapter.RokuDeviceAdapter
 import com.stremio.bridge.databinding.ActivityMainBinding
 import com.stremio.bridge.model.RokuDevice
 import com.stremio.bridge.service.RokuDiscoveryService
+import com.stremio.bridge.service.SendVideoResult
 import com.stremio.bridge.viewmodel.MainViewModel
 import com.stremio.bridge.util.StremioIntentParser
 import com.stremio.bridge.model.StreamData
@@ -49,6 +51,11 @@ class MainActivity : AppCompatActivity() {
         viewModel.rokuDevices.observe(this) { devices ->
             deviceAdapter.updateDevices(devices)
             updateEmptyState(devices.isEmpty())
+            
+            // Show dialog if no devices found and we just finished searching
+            if (devices.isEmpty() && viewModel.connectionStatus.value?.contains("No Roku devices found") == true) {
+                showNoRokuDevicesDialog()
+            }
             
             // Update status based on devices found
             when {
@@ -200,12 +207,18 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Testing connection to ${selectedDevice?.name ?: "Roku device"}...", Toast.LENGTH_SHORT).show()
         
         
-        viewModel.sendVideoToRoku(testUrl, testTitle, testFormat) { success ->
+        viewModel.sendVideoToRoku(testUrl, testTitle, testFormat) { result ->
             runOnUiThread {
-                if (success) {
-                    Toast.makeText(this, "Test video sent to Roku!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Failed to send test video. Please check your connection.", Toast.LENGTH_LONG).show()
+                when (result) {
+                    is SendVideoResult.Success -> {
+                        Toast.makeText(this, "Test video sent to Roku!", Toast.LENGTH_SHORT).show()
+                    }
+                    is SendVideoResult.AppNotFound -> {
+                        showRokuAppMissingDialog(selectedDevice?.name ?: "Roku device")
+                    }
+                    is SendVideoResult.Failure -> {
+                        Toast.makeText(this, "Failed to send test video: ${result.reason}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -267,17 +280,23 @@ class MainActivity : AppCompatActivity() {
         // Temporarily select this device for sending
         viewModel.selectRokuDevice(device)
         
-        viewModel.sendVideoToRoku(streamData.url, streamData.title, streamData.format) { success ->
+        viewModel.sendVideoToRoku(streamData.url, streamData.title, streamData.format) { result ->
             runOnUiThread {
-                if (success) {
-                    Toast.makeText(this, "Stream sent to ${device.name}: ${streamData.title}", Toast.LENGTH_LONG).show()
-                    
-                    // Clear the pending video after successful send
-                    pendingStreamData = null
-                    updateStatus("Video sent successfully!", isOnline = true)
-                    deviceAdapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(this, "Failed to send stream to ${device.name}. Please try again.", Toast.LENGTH_LONG).show()
+                when (result) {
+                    is SendVideoResult.Success -> {
+                        Toast.makeText(this, "Stream sent to ${device.name}: ${streamData.title}", Toast.LENGTH_LONG).show()
+                        
+                        // Clear the pending video after successful send
+                        pendingStreamData = null
+                        updateStatus("Video sent successfully!", isOnline = true)
+                        deviceAdapter.notifyDataSetChanged()
+                    }
+                    is SendVideoResult.AppNotFound -> {
+                        showRokuAppMissingDialog(device.name)
+                    }
+                    is SendVideoResult.Failure -> {
+                        Toast.makeText(this, "Failed to send stream to ${device.name}. Please try again.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -290,12 +309,18 @@ class MainActivity : AppCompatActivity() {
             return
         }
         
-        viewModel.sendVideoToRoku(streamData.url, streamData.title, streamData.format) { success ->
+        viewModel.sendVideoToRoku(streamData.url, streamData.title, streamData.format) { result ->
             runOnUiThread {
-                if (success) {
-                    Toast.makeText(this, "Stream sent to Roku: ${streamData.title}", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Failed to send stream to Roku. Please try again.", Toast.LENGTH_LONG).show()
+                when (result) {
+                    is SendVideoResult.Success -> {
+                        Toast.makeText(this, "Stream sent to Roku: ${streamData.title}", Toast.LENGTH_LONG).show()
+                    }
+                    is SendVideoResult.AppNotFound -> {
+                        showRokuAppMissingDialog(selectedDevice.name)
+                    }
+                    is SendVideoResult.Failure -> {
+                        Toast.makeText(this, "Failed to send stream to Roku. Please try again.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -316,6 +341,88 @@ class MainActivity : AppCompatActivity() {
             else -> {
                 statusIndicator?.setBackgroundResource(R.drawable.status_indicator_offline)
             }
+        }
+    }
+    
+    /**
+     * Show dialog when no Roku devices are found
+     */
+    private fun showNoRokuDevicesDialog() {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("No Roku Devices Found")
+            .setMessage("No Roku devices were detected on your network. Please check:\n\n" +
+                    "• Both devices are on the same Wi-Fi network\n" +
+                    "• Roku 'Control by mobile apps' is enabled\n" +
+                    "• Router doesn't have client isolation enabled\n\n" +
+                    "Would you like to see setup instructions?")
+            .setPositiveButton("Setup Guide") { _, _ ->
+                showRokuSetupGuide()
+            }
+            .setNegativeButton("Manual IP") { _, _ ->
+                showManualIpDialog()
+            }
+            .setNeutralButton("Retry") { _, _ ->
+                // Retry discovery
+                startRokuDiscovery()
+            }
+            .create()
+        
+        dialog.show()
+    }
+    
+    /**
+     * Show Roku setup guide
+     */
+    private fun showRokuSetupGuide() {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Roku Setup Guide")
+            .setMessage("To enable your Roku device for control:\n\n" +
+                    "1. Press HOME on Roku remote\n" +
+                    "2. Go to Settings > System\n" +
+                    "3. Select 'Advanced system settings'\n" +
+                    "4. Choose 'Control by mobile apps'\n" +
+                    "5. Set Network access to 'Default'\n\n" +
+                    "Make sure both devices are on the same Wi-Fi network.")
+            .setPositiveButton("Got it", null)
+            .create()
+        
+        dialog.show()
+    }
+
+    /**
+     * Show dialog when Roku app is not installed
+     */
+    private fun showRokuAppMissingDialog(deviceName: String) {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Roku App Not Found")
+            .setMessage("The 'Stroku Receiver' app is not installed on your Roku device '$deviceName'. Please install it from the Roku Channel Store to stream content.")
+            .setPositiveButton("Open Roku Store") { _, _ ->
+                // Open the Roku Channel Store
+                openRokuChannelStore()
+            }
+            .setNegativeButton("Cancel", null)
+            .setNeutralButton("Retry") { _, _ ->
+                // Retry sending the video
+                pendingStreamData?.let { _ ->
+                    sendPendingVideoToDevice(viewModel.selectedDevice.value!!)
+                }
+            }
+            .create()
+        
+        dialog.show()
+    }
+    
+    /**
+     * Open Roku Channel Store to install the app
+     */
+    private fun openRokuChannelStore() {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("https://channelstore.roku.com/details/821678/stroku-receiver")
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            // Fallback: show a toast with the URL
+            Toast.makeText(this, "Please visit: https://channelstore.roku.com/details/821678/stroku-receiver", Toast.LENGTH_LONG).show()
         }
     }
 }

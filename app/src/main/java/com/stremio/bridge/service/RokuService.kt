@@ -14,6 +14,23 @@ import java.net.NetworkInterface
 import java.util.concurrent.TimeUnit
 
 /**
+ * Result of launching the Stremio Bridge app
+ */
+sealed class LaunchResult {
+    object Success : LaunchResult()
+    data class Failure(val reason: String) : LaunchResult()
+}
+
+/**
+ * Result of sending video to Roku
+ */
+sealed class SendVideoResult {
+    object Success : SendVideoResult()
+    object AppNotFound : SendVideoResult()
+    data class Failure(val reason: String) : SendVideoResult()
+}
+
+/**
  * Service for communicating with Roku devices via ECP (External Control Protocol)
  */
 class RokuService {
@@ -38,8 +55,122 @@ class RokuService {
     companion object {
         private const val TAG = "RokuService"
         private const val ROKU_ECP_PORT = 8060
-        private const val ROKU_APP_ID = "dev" // Your Stremio Bridge app ID
+        private const val ROKU_APP_NAME = "Stroku Receiver" // App name to search for
         private const val ROKU_MEDIA_PLAYER_ID = "11" // Built-in Roku Media Player
+    }
+    
+    // Cache the detected app ID to avoid repeated lookups
+    private var cachedAppId: String? = null
+    
+    /**
+     * Clear the cached app ID (useful when switching between dev and published versions)
+     */
+    fun clearAppIdCache() {
+        cachedAppId = null
+        log("🔄 Cleared app ID cache")
+    }
+    
+    /**
+     * Detect the Stremio Bridge app ID dynamically
+     * This works for both development ("dev") and published app IDs
+     */
+    private suspend fun detectStremioBridgeAppId(rokuIp: String): String? = withContext(Dispatchers.IO) {
+        // Return cached ID if available
+        cachedAppId?.let { return@withContext it }
+        
+        try {
+            log("🔍 Detecting Stremio Bridge app ID...")
+            
+            val appsRequest = Request.Builder()
+                .url("http://$rokuIp:$ROKU_ECP_PORT/query/apps")
+                .get()
+                .build()
+            
+            val appsResponse = httpClient.newCall(appsRequest).execute()
+            if (!appsResponse.isSuccessful) {
+                log("❌ Failed to get apps list: ${appsResponse.code}")
+                return@withContext null
+            }
+            
+            val appsBody = appsResponse.body?.string()
+            log("Available apps: $appsBody")
+            
+            // Parse the apps list to find our app
+            if (appsBody != null) {
+                log("Parsing apps list...")
+                
+                // Check if response is XML format (which it is based on the logs)
+                if (appsBody.contains("<apps>")) {
+                    log("Detected XML format, parsing XML...")
+                    
+                    // Parse XML format: <app id="821678" type="appl" version="1.0.3">Stroku Receiver</app>
+                    val appXmlRegex = "<app\\s+id=\"([^\"]+)\"[^>]*>([^<]+)</app>".toRegex()
+                    val matches = appXmlRegex.findAll(appsBody)
+                    
+                    for (match in matches) {
+                        val appId = match.groupValues[1]
+                        val appName = match.groupValues[2].trim()
+                        
+                        log("Found app: ID=$appId, Name='$appName'")
+                        
+                        // Check if this is our app (case-insensitive, also check for variations)
+                        if (appName.equals(ROKU_APP_NAME, ignoreCase = true) ||
+                            appName.equals("Stremio Bridge", ignoreCase = true) ||
+                            appName.contains("Stremio", ignoreCase = true) ||
+                            appName.contains("Stroku", ignoreCase = true)) {
+                            log("✅ Found Stremio Bridge app with ID: $appId (Name: '$appName')")
+                            cachedAppId = appId
+                            return@withContext appId
+                        }
+                    }
+                    
+                    // Fallback: also check for "dev" ID in case it's still in development mode
+                    if (appsBody.contains("id=\"dev\"")) {
+                        log("✅ Found development app with ID: dev")
+                        cachedAppId = "dev"
+                        return@withContext "dev"
+                    }
+                } else {
+                    // Fallback to JSON parsing if needed
+                    log("Detected JSON format, parsing JSON...")
+                    
+                    // Look for the app by name "Stroku Receiver"
+                    val appIdRegex = "\"id\":\"([^\"]+)\".*?\"name\":\"([^\"]+)\"".toRegex()
+                    val matches = appIdRegex.findAll(appsBody)
+                    
+                    for (match in matches) {
+                        val appId = match.groupValues[1]
+                        val appName = match.groupValues[2]
+                        
+                        log("Found app: ID=$appId, Name='$appName'")
+                        
+                        // Check if this is our app (case-insensitive, also check for variations)
+                        if (appName.equals(ROKU_APP_NAME, ignoreCase = true) ||
+                            appName.equals("Stremio Bridge", ignoreCase = true) ||
+                            appName.contains("Stremio", ignoreCase = true) ||
+                            appName.contains("Stroku", ignoreCase = true)) {
+                            log("✅ Found Stremio Bridge app with ID: $appId (Name: '$appName')")
+                            cachedAppId = appId
+                            return@withContext appId
+                        }
+                    }
+                    
+                    // Fallback: also check for "dev" ID in case it's still in development mode
+                    if (appsBody.contains("\"id\":\"dev\"")) {
+                        log("✅ Found development app with ID: dev")
+                        cachedAppId = "dev"
+                        return@withContext "dev"
+                    }
+                }
+            }
+            
+            log("❌ Stremio Bridge app not found in available apps")
+            return@withContext null
+            
+        } catch (e: Exception) {
+            log("❌ Error detecting app ID: ${e.message}")
+            return@withContext null
+        }
     }
     
     /**
@@ -219,18 +350,35 @@ class RokuService {
         videoUrl: String,
         title: String,
         format: String
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): SendVideoResult = withContext(Dispatchers.IO) {
         try {
             log("Sending video to Roku: $title")
             log("Video URL: $videoUrl")
             log("Format: $format")
             
-            // First, try to launch the Stremio Bridge app
-            val launchSuccess = launchStremioBridgeApp(device.ipAddress)
-            if (!launchSuccess) {
-                log("❌ Failed to launch Stremio Bridge app, trying fallback method")
-                // Fallback: try to use built-in Roku Media Player
-                return@withContext sendVideoToRokuMediaPlayer(device.ipAddress, videoUrl, title, format)
+            // Try input method first (may work without "Control by mobile apps")
+            log("🔄 Trying /input method first...")
+            val inputResult = sendVideoViaInput(device.ipAddress, videoUrl, title, format)
+            if (inputResult is SendVideoResult.Success) {
+                log("✅ Successfully sent video via /input method")
+                return@withContext inputResult
+            }
+            
+            log("⚠️ /input method failed, trying /launch method...")
+            
+            // Fallback to launch method
+            val launchResult = launchStremioBridgeApp(device.ipAddress)
+            if (launchResult is LaunchResult.Failure) {
+                log("❌ Failed to launch Stremio Bridge app: ${launchResult.reason}")
+                
+                // Check if it's because the app is not installed
+                if (launchResult.reason == "APP_NOT_FOUND") {
+                    return@withContext SendVideoResult.AppNotFound
+                }
+                
+                // Try fallback method for other failures
+                val fallbackSuccess = sendVideoToRokuMediaPlayer(device.ipAddress, videoUrl, title, format)
+                return@withContext if (fallbackSuccess) SendVideoResult.Success else SendVideoResult.Failure("All methods failed")
             }
             
             // Wait a moment for the app to launch
@@ -240,24 +388,145 @@ class RokuService {
             val success = sendVideoData(device.ipAddress, videoUrl, title, format)
             
             if (success) {
-                log("✅ Successfully sent video to Roku")
+                log("✅ Successfully sent video to Roku via /launch")
+                return@withContext SendVideoResult.Success
             } else {
                 log("❌ Failed to send video data to Roku")
+                return@withContext SendVideoResult.Failure("Failed to send video data")
             }
-            
-            success
         } catch (e: Exception) {
             log("❌ Error sending video to Roku: ${e.message}")
-            false
+            return@withContext SendVideoResult.Failure("Exception: ${e.message}")
+        }
+    }
+    
+    /**
+     * Send video via /input endpoint (may work without "Control by mobile apps")
+     */
+    private suspend fun sendVideoViaInput(
+        rokuIp: String,
+        videoUrl: String,
+        title: String,
+        format: String
+    ): SendVideoResult = withContext(Dispatchers.IO) {
+        try {
+            log("🎯 Attempting to send video via /input endpoint")
+            
+            // For /input method, try to use the published app ID first, fallback to dev
+            // This avoids the 403 error when "Control by mobile apps" is disabled
+            val appId = tryDetectAppIdWithoutQuery(rokuIp) ?: "dev"
+            log("Using app ID for /input method: $appId")
+            
+            // Launch the app first
+            val launchUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$appId"
+            val launchRequest = Request.Builder()
+                .url(launchUrl)
+                .post("".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                .build()
+            
+            val launchResponse = httpClient.newCall(launchRequest).execute()
+            if (!launchResponse.isSuccessful) {
+                log("❌ Failed to launch app for /input method: ${launchResponse.code}")
+                return@withContext SendVideoResult.Failure("Failed to launch app")
+            }
+            
+            log("✅ App launched successfully, waiting for startup...")
+            kotlinx.coroutines.delay(2000) // Wait for app to fully start
+            
+            // URL encode the parameters
+            val encodedUrl = java.net.URLEncoder.encode(videoUrl, "UTF-8")
+            val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
+            val encodedFormat = java.net.URLEncoder.encode(format, "UTF-8")
+            
+            // Use /input endpoint with contentid as the video URL
+            val inputUrl = "http://$rokuIp:$ROKU_ECP_PORT/input?contentid=$encodedUrl&mediatype=video&title=$encodedTitle&format=$encodedFormat"
+            
+            log("Input URL: $inputUrl")
+            
+            val request = Request.Builder()
+                .url(inputUrl)
+                .post("".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                .build()
+            
+            val response = httpClient.newCall(request).execute()
+            val success = response.isSuccessful
+            
+            log("Input response: ${response.code} - $success")
+            
+            if (success) {
+                log("✅ Video sent successfully via /input endpoint")
+                return@withContext SendVideoResult.Success
+            } else {
+                val errorBody = response.body?.string()
+                log("❌ /input failed: ${response.code} - $errorBody")
+                return@withContext SendVideoResult.Failure("Input method failed: ${response.code}")
+            }
+        } catch (e: Exception) {
+            log("❌ Error with /input method: ${e.message}")
+            return@withContext SendVideoResult.Failure("Input exception: ${e.message}")
+        }
+    }
+    
+    /**
+     * Try to detect app ID without using /query/apps (to avoid 403 errors)
+     */
+    private suspend fun tryDetectAppIdWithoutQuery(rokuIp: String): String? = withContext(Dispatchers.IO) {
+        try {
+            // First try the published app ID (821678)
+            val publishedAppId = "821678"
+            val testUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$publishedAppId"
+            val testRequest = Request.Builder()
+                .url(testUrl)
+                .post("".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                .build()
+            
+            val testResponse = httpClient.newCall(testRequest).execute()
+            if (testResponse.isSuccessful) {
+                log("✅ Published app ID $publishedAppId works")
+                return@withContext publishedAppId
+            } else {
+                log("❌ Published app ID $publishedAppId failed: ${testResponse.code}")
+            }
+            
+            // If published ID fails, try dev ID
+            val devAppId = "dev"
+            val devTestUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$devAppId"
+            val devTestRequest = Request.Builder()
+                .url(devTestUrl)
+                .post("".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                .build()
+            
+            val devTestResponse = httpClient.newCall(devTestRequest).execute()
+            if (devTestResponse.isSuccessful) {
+                log("✅ Dev app ID $devAppId works")
+                return@withContext devAppId
+            } else {
+                log("❌ Dev app ID $devAppId failed: ${devTestResponse.code}")
+            }
+            
+            log("❌ No working app ID found")
+            return@withContext null
+        } catch (e: Exception) {
+            log("❌ Error testing app IDs: ${e.message}")
+            return@withContext null
         }
     }
     
     /**
      * Launch the Stremio Bridge app on Roku
      */
-    private suspend fun launchStremioBridgeApp(rokuIp: String): Boolean = withContext(Dispatchers.IO) {
+    private suspend fun launchStremioBridgeApp(rokuIp: String): LaunchResult = withContext(Dispatchers.IO) {
         try {
-            // First check if the app is already running (like PowerShell script)
+            // First detect the app ID dynamically
+            val appId = detectStremioBridgeAppId(rokuIp)
+            if (appId == null) {
+                log("❌ Could not detect Stremio Bridge app ID - app not found")
+                return@withContext LaunchResult.Failure("APP_NOT_FOUND")
+            }
+            
+            log("Using app ID: $appId")
+            
+            // Check if the app is already running
             try {
                 val activeAppRequest = Request.Builder()
                     .url("http://$rokuIp:$ROKU_ECP_PORT/query/active-app")
@@ -270,42 +539,19 @@ class RokuService {
                     log("Active app response: $responseBody")
                     
                     // Check if our app is already active
-                    if (responseBody?.contains("\"id\":\"$ROKU_APP_ID\"") == true) {
+                    if (responseBody?.contains("\"id\":\"$appId\"") == true) {
                         log("✅ Stremio Bridge app is already active")
-                        return@withContext true
+                        return@withContext LaunchResult.Success
                     }
                 }
             } catch (e: Exception) {
                 log("⚠️ Could not check active app status: ${e.message}")
             }
             
-            // Check what apps are available on the Roku
-            try {
-                val appsRequest = Request.Builder()
-                    .url("http://$rokuIp:$ROKU_ECP_PORT/query/apps")
-                    .get()
-                    .build()
-                
-                val appsResponse = httpClient.newCall(appsRequest).execute()
-                if (appsResponse.isSuccessful) {
-                    val appsBody = appsResponse.body?.string()
-                    log("Available apps: $appsBody")
-                    
-                    // Check if our app is in the list
-                    if (appsBody?.contains("\"id\":\"$ROKU_APP_ID\"") != true) {
-                        log("❌ Stremio Bridge app (ID: $ROKU_APP_ID) not found in available apps")
-                        log("Available apps: $appsBody")
-                        return@withContext false
-                    }
-                }
-            } catch (e: Exception) {
-                log("⚠️ Could not check available apps: ${e.message}")
-            }
-            
             // Launch the app
-            log("🚀 Launching Stremio Bridge app...")
+            log("🚀 Launching Stremio Bridge app with ID: $appId")
             val request = Request.Builder()
-                .url("http://$rokuIp:$ROKU_ECP_PORT/launch/$ROKU_APP_ID")
+                .url("http://$rokuIp:$ROKU_ECP_PORT/launch/$appId")
                 .post("".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
                 .build()
             
@@ -315,11 +561,13 @@ class RokuService {
             log("Launch app response: ${response.code} - $success")
             if (!success) {
                 log("❌ Launch app response body: ${response.body?.string()}")
+                return@withContext LaunchResult.Failure("LAUNCH_FAILED")
             }
-            success
+            
+            return@withContext LaunchResult.Success
         } catch (e: Exception) {
             Log.e(TAG, "Error launching Stremio Bridge app", e)
-            false
+            return@withContext LaunchResult.Failure("EXCEPTION: ${e.message}")
         }
     }
     
@@ -333,15 +581,23 @@ class RokuService {
         format: String
     ): Boolean = withContext(Dispatchers.IO) {
         try {
+            // Get the app ID dynamically
+            val appId = detectStremioBridgeAppId(rokuIp)
+            if (appId == null) {
+                log("❌ Could not detect Stremio Bridge app ID for sending video")
+                return@withContext false
+            }
+            
             // URL encode the parameters (matching PowerShell script approach)
             val encodedUrl = java.net.URLEncoder.encode(videoUrl, "UTF-8")
             val encodedTitle = java.net.URLEncoder.encode(title, "UTF-8")
             val encodedFormat = java.net.URLEncoder.encode(format, "UTF-8")
             
-            // Use the same format as PowerShell script
-            val launchUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$ROKU_APP_ID?contentId=test_video&url=$encodedUrl&title=$encodedTitle&format=$encodedFormat"
+            // Use the detected app ID
+            val launchUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$appId?contentId=test_video&url=$encodedUrl&title=$encodedTitle&format=$encodedFormat"
             
             log("📤 Sending video data to Roku...")
+            log("App ID: $appId")
             log("Video URL: $videoUrl")
             log("Title: $title")
             log("Format: $format")

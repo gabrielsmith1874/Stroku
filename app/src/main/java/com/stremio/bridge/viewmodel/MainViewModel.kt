@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stremio.bridge.model.RokuDevice
 import com.stremio.bridge.service.RokuService
+import com.stremio.bridge.service.SendVideoResult
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
@@ -56,12 +57,12 @@ class MainViewModel : ViewModel() {
         videoUrl: String,
         title: String,
         format: String,
-        callback: (Boolean) -> Unit
+        callback: (SendVideoResult) -> Unit
     ) {
         val device = _selectedDevice.value
         if (device == null) {
             _connectionStatus.value = "No Roku device selected"
-            callback(false)
+            callback(SendVideoResult.Failure("No device selected"))
             return
         }
         
@@ -69,18 +70,24 @@ class MainViewModel : ViewModel() {
             _connectionStatus.value = "Sending video to ${device.name}..."
             
             try {
-                val success = rokuService.sendVideoToRoku(device, videoUrl, title, format)
+                val result = rokuService.sendVideoToRoku(device, videoUrl, title, format)
                 
-                if (success) {
-                    _connectionStatus.value = "Video sent successfully!"
-                } else {
-                    _connectionStatus.value = "Failed to send video"
+                when (result) {
+                    is SendVideoResult.Success -> {
+                        _connectionStatus.value = "Video sent successfully!"
+                    }
+                    is SendVideoResult.AppNotFound -> {
+                        _connectionStatus.value = "Roku app not installed"
+                    }
+                    is SendVideoResult.Failure -> {
+                        _connectionStatus.value = "Failed to send video: ${result.reason}"
+                    }
                 }
                 
-                callback(success)
+                callback(result)
             } catch (e: Exception) {
                 _connectionStatus.value = "Error: ${e.message}"
-                callback(false)
+                callback(SendVideoResult.Failure("Exception: ${e.message}"))
             }
         }
     }
