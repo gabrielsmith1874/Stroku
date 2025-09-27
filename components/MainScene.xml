@@ -243,5 +243,14 @@
         <function name="ShowReady" />
         <function name="InitializeDisplay" />
         <function name="SetTheme" />
+        <function name="HandleVoiceContentRequest" />
+        <function name="HandleVoiceCommandError" />
+        <function name="ShowVoiceCommandHelp" />
+        <function name="ShowInputReceived" />
+        <function name="HandleInputRequest" />
+        <function name="HandleDeepLinkRequest" />
+        <function name="HandleDeepLinkError" />
+        <function name="HandleRokuDeepLinkRequest" />
+        <function name="HandleInvalidDeepLink" />
     </interface>
 </component>

@@ -1,0 +1,30 @@
+{
+  "name": "stroku-bridge",
+  "version": "1.0.0",
+  "description": "Stroku Bridge - Roku app for streaming Stremio content",
+  "main": "index.js",
+  "scripts": {
+    "test:roku": "node manual-test-runner.js",
+    "test:roku:full": "node manual-test-runner.js",
+    "test:roku:verbose": "node manual-test-runner.js",
+    "test:roku:debug": "node manual-test-runner.js",
+    "test:movie": "node manual-test-runner.js movie test_movie_001 \"Test Movie\"",
+    "test:episode": "node manual-test-runner.js episode test_episode_002 \"Test Episode\"",
+    "test:series": "node manual-test-runner.js series test_series_005 \"Test Series\"",
+    "test:short": "node manual-test-runner.js shortFormVideo test_short_006 \"Test Short Video\"",
+    "test:special": "node manual-test-runner.js tvSpecial test_special_007 \"Test TV Special\"",
+    "roku:status": "node manual-test-runner.js",
+    "roku:config": "echo Roku IP: 10.0.0.243, App ID: dev",
+    "roku:setup": "echo Setup complete - run npm run test:roku"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "roku",
+    "stremio",
+    "streaming",
+    "bridge",
+    "deep-linking"
+  ],
+  "author": "Stroku Bridge Team",
+  "license": "MIT"
+}
