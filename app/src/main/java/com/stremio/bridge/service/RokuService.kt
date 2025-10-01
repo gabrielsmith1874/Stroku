@@ -124,9 +124,9 @@ class RokuService {
                         }
                     }
                     
-                    // Fallback: also check for "dev" ID in case it's still in development mode
+                    // Fallback: check for "dev" ID only if production app not found
                     if (appsBody.contains("id=\"dev\"")) {
-                        log("✅ Found development app with ID: dev")
+                        log("⚠️ Found development app with ID: dev (production app not found)")
                         cachedAppId = "dev"
                         return@withContext "dev"
                     }
@@ -155,9 +155,9 @@ class RokuService {
                         }
                     }
                     
-                    // Fallback: also check for "dev" ID in case it's still in development mode
+                    // Fallback: check for "dev" ID only if production app not found
                     if (appsBody.contains("\"id\":\"dev\"")) {
-                        log("✅ Found development app with ID: dev")
+                        log("⚠️ Found development app with ID: dev (production app not found)")
                         cachedAppId = "dev"
                         return@withContext "dev"
                     }
@@ -414,6 +414,7 @@ class RokuService {
             
             // For /input method, try to use the published app ID first, fallback to dev
             // This avoids the 403 error when "Control by mobile apps" is disabled
+            // Production app ID (821678) is prioritized over development
             val appId = tryDetectAppIdWithoutQuery(rokuIp) ?: "dev"
             log("Using app ID for /input method: $appId")
             
@@ -472,7 +473,7 @@ class RokuService {
      */
     private suspend fun tryDetectAppIdWithoutQuery(rokuIp: String): String? = withContext(Dispatchers.IO) {
         try {
-            // First try the published app ID (821678)
+            // First try the published app ID (821678) - prioritized over dev
             val publishedAppId = "821678"
             val testUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$publishedAppId"
             val testRequest = Request.Builder()
@@ -488,7 +489,7 @@ class RokuService {
                 log("❌ Published app ID $publishedAppId failed: ${testResponse.code}")
             }
             
-            // If published ID fails, try dev ID
+            // If published ID fails, try dev ID (fallback only)
             val devAppId = "dev"
             val devTestUrl = "http://$rokuIp:$ROKU_ECP_PORT/launch/$devAppId"
             val devTestRequest = Request.Builder()
@@ -498,7 +499,7 @@ class RokuService {
             
             val devTestResponse = httpClient.newCall(devTestRequest).execute()
             if (devTestResponse.isSuccessful) {
-                log("✅ Dev app ID $devAppId works")
+                log("✅ Dev app ID $devAppId works (fallback)")
                 return@withContext devAppId
             } else {
                 log("❌ Dev app ID $devAppId failed: ${devTestResponse.code}")
