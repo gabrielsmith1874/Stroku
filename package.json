@@ -4,6 +4,7 @@
   "description": "Stroku Bridge - Roku app for streaming Stremio content",
   "main": "index.js",
   "scripts": {
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1",
     "test:roku": "node manual-test-runner.js",
     "test:roku:full": "node manual-test-runner.js",
     "test:roku:verbose": "node manual-test-runner.js",

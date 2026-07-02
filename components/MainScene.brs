@@ -30,6 +30,7 @@ sub init()
     m.step2Label = m.top.findNode("step2Label")
     m.step3Label = m.top.findNode("step3Label")
     m.controlsLabel = m.top.findNode("controlsLabel")
+    m.disclaimerLabel = m.top.findNode("disclaimerLabel")
     
     ' Theme colors (Stremio purple theme)
     m.theme = {
@@ -174,27 +175,23 @@ sub InitializeDisplay()
     print "Scale factors: X=" + Str(scaleX) + " Y=" + Str(scaleY) + " Final=" + Str(scale)
     
     ' Update all modern UI elements with responsive positioning
-    UpdateModernCard("headerCard", 160, 80, 1600, 180, scale)
-    UpdateModernElement("iconContainer", 800, 120, 80, 80, scale)
-    UpdateModernElement("appTitle", 960, 140, 1400, 60, scale)
-    UpdateModernElement("appSubtitle", 960, 200, 1400, 40, scale)
+    UpdateModernElement("appTitle", 960, 80, 1400, 60, scale)
+    UpdateModernElement("appSubtitle", 960, 135, 1400, 40, scale)
     
-    UpdateModernCard("statusCard", 240, 320, 1440, 280, scale)
-    UpdateModernElement("statusIndicator", 940, 380, 40, 40, scale)
-    UpdateModernElement("statusLabel", 960, 430, 1300, 60, scale)
-    UpdateModernElement("instructionsLabel", 960, 490, 1300, 50, scale)
+    UpdateModernCard("statusCard", 260, 240, 1400, 540, scale)
+    UpdateModernElement("statusIndicator", 940, 285, 40, 40, scale)
+    UpdateModernElement("statusLabel", 960, 345, 1300, 60, scale)
+    UpdateModernElement("instructionsLabel", 960, 410, 1300, 50, scale)
     
-    UpdateModernCard("networkCard", 320, 640, 1280, 120, scale)
-    UpdateModernElement("ipLabel", 960, 680, 1200, 40, scale)
-    UpdateModernElement("networkStatus", 960, 720, 1200, 30, scale)
+    UpdateModernElement("ipLabel", 960, 490, 1200, 40, scale)
+    UpdateModernElement("networkStatus", 960, 535, 1200, 30, scale)
     
-    UpdateModernCard("instructionsCard", 400, 800, 1120, 160, scale)
-    UpdateModernElement("step1Label", 960, 830, 1000, 30, scale)
-    UpdateModernElement("step2Label", 960, 860, 1000, 30, scale)
-    UpdateModernElement("step3Label", 960, 890, 1000, 30, scale)
-    UpdateModernElement("controlsLabel", 960, 930, 1000, 25, scale)
-    
-    UpdateModernElement("versionLabel", 960, 1020, 1800, 30, scale)
+    UpdateModernElement("step1Label", 960, 600, 1000, 30, scale)
+    UpdateModernElement("step2Label", 960, 635, 1000, 30, scale)
+    UpdateModernElement("step3Label", 960, 670, 1000, 30, scale)
+    UpdateModernElement("controlsLabel", 960, 725, 1000, 25, scale)
+    UpdateModernElement("disclaimerLabel", 960, 840, 1600, 100, scale)
+    UpdateModernElement("versionLabel", 960, 980, 1600, 30, scale)
     
     ' Loading elements
     UpdateModernElement("loadingSpinner", 960, 540, 0, 0, scale)
@@ -753,6 +750,7 @@ sub hideAllLabels()
     if m.step3Label <> invalid then m.step3Label.visible = false
     if m.controlsLabel <> invalid then m.controlsLabel.visible = false
     if m.top.findNode("versionLabel") <> invalid then m.top.findNode("versionLabel").visible = false
+    if m.disclaimerLabel <> invalid then m.disclaimerLabel.visible = false
     if m.statusIndicator <> invalid then m.statusIndicator.visible = false
 end sub
 
@@ -769,6 +767,7 @@ sub showAllLabels()
     if m.step3Label <> invalid then m.step3Label.visible = true
     if m.controlsLabel <> invalid then m.controlsLabel.visible = true
     if m.top.findNode("versionLabel") <> invalid then m.top.findNode("versionLabel").visible = true
+    if m.disclaimerLabel <> invalid then m.disclaimerLabel.visible = true
     if m.statusIndicator <> invalid then m.statusIndicator.visible = true
 end sub
 
@@ -788,6 +787,7 @@ sub SetTheme()
     if m.appSubtitle <> invalid then m.appSubtitle.color = m.theme.textSecondary
     if m.ipLabel <> invalid then m.ipLabel.color = m.theme.accent
     if m.networkStatus <> invalid then m.networkStatus.color = m.theme.textHint
+    if m.disclaimerLabel <> invalid then m.disclaimerLabel.color = m.theme.accent
     
     print "Stremio purple theme applied"
 end sub

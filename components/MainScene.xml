@@ -10,18 +10,9 @@
                    height="1080" 
                    color="0x0F0F23FF" />
         
-        <!-- Header area with modern card design -->
-        <Rectangle id="headerCard"
-                   translation="[160, 80]"
-                   width="1600"
-                   height="180"
-                   color="0x252541FF"
-                   opacity="0.95" />
-        
-        
         <!-- App title with modern typography -->
         <Label id="appTitle"
-               translation="[960, 140]"
+               translation="[960, 80]"
                width="1400"
                height="60"
                text="Stroku Receiver"
@@ -32,7 +23,7 @@
         
         <!-- Subtitle -->
         <Label id="appSubtitle"
-               translation="[960, 200]"
+               translation="[960, 135]"
                width="1400"
                height="40"
                text="Stream content from Stremio to your Roku device"
@@ -41,24 +32,24 @@
                font="font:MediumSystemFont"
                color="0xB3B3CCFF" />
         
-        <!-- Main status card -->
+        <!-- Main status card (Container) -->
         <Rectangle id="statusCard"
-                   translation="[240, 320]"
-                   width="1440"
-                   height="280"
-                   color="0x252541FF"
+                   translation="[260, 240]"
+                   width="1400"
+                   height="540"
+                   color="0x1E1E38FF"
                    opacity="0.95" />
         
         <!-- Status indicator circle -->
         <Rectangle id="statusIndicator"
-                   translation="[940, 380]"
+                   translation="[940, 285]"
                    width="40"
                    height="40"
                    color="0x4CAF50FF" />
         
         <!-- Status text - main message -->
         <Label id="statusLabel"
-               translation="[960, 430]"
+               translation="[960, 345]"
                width="1300"
                height="60"
                text="Ready to receive streams"
@@ -69,7 +60,7 @@
         
         <!-- Instructions text -->
         <Label id="instructionsLabel"
-               translation="[960, 490]"
+               translation="[960, 410]"
                width="1300"
                height="50"
                text="Use your Android app to cast Stremio content to this device"
@@ -78,17 +69,9 @@
                font="font:MediumSystemFont"
                color="0xB3B3CCFF" />
         
-        <!-- Network info card -->
-        <Rectangle id="networkCard"
-               translation="[320, 640]"
-               width="1280"
-               height="120"
-               color="0x1A1A2EFF"
-               opacity="0.9" />
-        
-        <!-- IP Address display with icon -->
+        <!-- IP Address display -->
         <Label id="ipLabel"
-               translation="[960, 680]"
+               translation="[960, 490]"
                width="1200"
                height="40"
                text="Device IP: Loading..."
@@ -99,7 +82,7 @@
         
         <!-- Network status -->
         <Label id="networkStatus"
-               translation="[960, 720]"
+               translation="[960, 535]"
                width="1200"
                height="30"
                text="Connected to your network"
@@ -108,17 +91,9 @@
                font="font:SmallSystemFont"
                color="0x8080A0FF" />
         
-        <!-- Instructions card -->
-        <Rectangle id="instructionsCard"
-                   translation="[400, 800]"
-                   width="1120"
-                   height="160"
-                   color="0x1A1A2EFF"
-                   opacity="0.8" />
-        
         <!-- Step by step instructions -->
         <Label id="step1Label"
-               translation="[960, 830]"
+               translation="[960, 600]"
                width="1000"
                height="30"
                text="1. Ensure your Roku and phone are on the same WiFi network"
@@ -128,7 +103,7 @@
                color="0xB3B3CCFF" />
         
         <Label id="step2Label"
-               translation="[960, 860]"
+               translation="[960, 635]"
                width="1000"
                height="30"
                text="2. Open Stremio on your Android device"
@@ -138,7 +113,7 @@
                color="0xB3B3CCFF" />
         
         <Label id="step3Label"
-               translation="[960, 890]"
+               translation="[960, 670]"
                width="1000"
                height="30"
                text="3. Use 'Play with External App' to cast content here"
@@ -148,7 +123,7 @@
                color="0xB3B3CCFF" />
         
         <Label id="controlsLabel"
-               translation="[960, 930]"
+               translation="[960, 725]"
                width="1000"
                height="25"
                text="Press BACK button to stop video playback"
@@ -157,10 +132,21 @@
                font="font:SmallSystemFont"
                color="0x8080A0FF" />
         
+        <!-- Disclaimer at bottom (outside card) -->
+        <Label id="disclaimerLabel"
+               translation="[960, 840]"
+               width="1600"
+               height="100"
+               text="Check out Stroku Native for a native Roku experience! Note: Stroku Native requires Real-Debrid, and support for addons other than Torrentio has not been tested."
+               horizAlign="center"
+               wrap="true"
+               font="font:SmallSystemFont"
+               color="0x9966FFFF" />
+        
         <!-- Version info at bottom -->
         <Label id="versionLabel"
-               translation="[960, 1020]"
-               width="1800"
+               translation="[960, 980]"
+               width="1600"
                height="30"
                text="Stremio Bridge v1.0.1 • Supports HLS, MP4, DASH, MKV streams"
                horizAlign="center"
@@ -177,8 +163,8 @@
         
         <!-- Modern loading animation -->
         <BusySpinner id="loadingSpinner"
-                     translation="[960, 540]"
-                     visible="false" />
+                      translation="[960, 540]"
+                      visible="false" />
         
         <!-- Loading text -->
         <Label id="loadingLabel"
@@ -194,12 +180,12 @@
         
         <!-- Modern error card -->
         <Rectangle id="errorCard"
-                   translation="[320, 420]"
-                   width="1280"
-                   height="240"
-                   color="0xF44336FF"
-                   opacity="0.95"
-                   visible="false" />
+                    translation="[320, 420]"
+                    width="1280"
+                    height="240"
+                    color="0xF44336FF"
+                    opacity="0.95"
+                    visible="false" />
         
         <Label id="errorTitle"
                translation="[960, 480]"

@@ -83,11 +83,19 @@ sub Main(args as object)
         else if contentId = "test_video"
             ' Handle test video from PowerShell script
             print "=== TEST VIDEO LAUNCH DETECTED ==="
-            print "URL: "; args.url
-            print "Title: "; args.title 
-            print "Format: "; args.format
             
-            if args.DoesExist("url") and args.DoesExist("title") and args.DoesExist("format")
+            if args.DoesExist("streamData")
+                testStreamData = ParseJson(args.streamData)
+                if testStreamData = invalid
+                    print "ERROR: Invalid streamData JSON"
+                    scene.callFunc("ShowError", "Invalid stream data received")
+                else
+                    print "Calling HandleECPStream with full stream data..."
+                    sleep(1000)
+                    scene.callFunc("HandleECPStream", testStreamData)
+                    print "HandleECPStream called"
+                end if
+            else if args.DoesExist("url") and args.DoesExist("title") and args.DoesExist("format")
                 testStreamData = {
                     url: args.url,
                     title: args.title,
@@ -646,23 +654,32 @@ sub HandleInputEvent(msg as object, scene as object)
                 
                 print "Input Media Type Valid: "; isValidInputMediaType
                 
-                ' Create content data from input event
-                inputStreamData = {
-                    url: "",
-                    title: "Input Content",
-                    format: "unknown",
-                    source: "roInput",
-                    mediaType: inputMediaType,
-                    isValidMediaType: isValidInputMediaType
-                }
+                inputStreamData = invalid
+                if inputInfo.DoesExist("streamdata")
+                    inputStreamData = ParseJson(inputInfo.streamdata)
+                    if inputStreamData = invalid
+                        print "ERROR: Invalid streamdata JSON received via roInput"
+                    end if
+                end if
+
+                if inputStreamData = invalid
+                    inputStreamData = {
+                        url: "",
+                        title: "Input Content",
+                        format: "auto",
+                        source: "roInput",
+                        mediaType: inputMediaType,
+                        isValidMediaType: isValidInputMediaType
+                    }
+                end if
                 
                 ' If we have a content ID that looks like a URL, use it
                 if inputInfo.contentid <> invalid and inputInfo.contentid <> ""
                     contentId = inputInfo.contentid
-                    if Left(contentId, 4) = "http" or Left(contentId, 5) = "https"
-                        inputStreamData.url = contentId
-                        inputStreamData.format = "auto"
-                        inputStreamData.title = "External Stream"
+                    if Left(contentId, 4) = "http"
+                        if not inputStreamData.DoesExist("url") or inputStreamData.url = ""
+                            inputStreamData.url = contentId
+                        end if
                         print "Using content ID as stream URL: "; contentId
                         print "About to call HandleECPStream with data: "; inputStreamData
                         
