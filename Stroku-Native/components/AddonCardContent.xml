@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="AddonCardContent" extends="ContentNode">
+    <interface>
+        <!-- "addon" for a real add-on card, "message" for the empty, loading and
+             call-to-action rows that share the same list. -->
+        <field id="rowKind" type="string" value="addon" />
+        <!-- Manifest values. These are add-on authored text and are never
+             translated. -->
+        <field id="version" type="string" />
+        <field id="types" type="string" />
+        <field id="logoUri" type="string" />
+        <!-- Right-hand status pill: "installed" or "available". -->
+        <field id="badge" type="string" />
+        <field id="badgeKind" type="string" value="available" />
+        <field id="selectable" type="boolean" value="true" />
+    </interface>
+</component>

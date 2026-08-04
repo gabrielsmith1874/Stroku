@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="SettingsRow" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onStateChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/SettingsRow.brs" />
+
+    <children>
+        <!-- The frame is drawn behind the card, so the two together read as a
+             one-pixel accent border around the focused row. -->
+        <Rectangle
+            id="focusFrame"
+            width="968"
+            height="74"
+            color="0x7657FFFF"
+            visible="false" />
+        <Rectangle
+            id="card"
+            translation="[3, 3]"
+            width="962"
+            height="68"
+            color="0x1B1934FF" />
+        <Rectangle
+            id="accentBar"
+            translation="[3, 3]"
+            width="6"
+            height="68"
+            color="0x9D86FFFF"
+            visible="false" />
+        <Label
+            id="label"
+            translation="[34, 0]"
+            width="520"
+            height="74"
+            vertAlign="center"
+            truncateOnDelimiter=" "
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+        <Label
+            id="value"
+            translation="[560, 0]"
+            width="336"
+            height="74"
+            horizAlign="right"
+            vertAlign="center"
+            font="font:MediumSystemFont"
+            color="0xB4B0C1FF" />
+        <Rectangle
+            id="togglePill"
+            translation="[802, 19]"
+            width="94"
+            height="36"
+            color="0x3A3660FF"
+            visible="false" />
+        <Label
+            id="toggleLabel"
+            translation="[802, 19]"
+            width="94"
+            height="36"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0xFFFFFFFF"
+            visible="false" />
+        <Label
+            id="chevron"
+            translation="[908, 0]"
+            width="40"
+            height="74"
+            text="&#8250;"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="0x6F6A8AFF" />
+
+        <!-- Section headers reuse the same row slot: the card is hidden and the
+             label is replaced by the smaller accent caption plus a rule. -->
+        <Label
+            id="headerLabel"
+            translation="[6, 12]"
+            width="620"
+            height="50"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0x9D86FFFF"
+            visible="false" />
+        <Rectangle
+            id="headerRule"
+            translation="[6, 66]"
+            width="956"
+            height="2"
+            color="0x27244AFF"
+            visible="false" />
+    </children>
+</component>

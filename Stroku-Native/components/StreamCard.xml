@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="StreamCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onFocusChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/StreamCard.brs" />
+
+    <children>
+        <!-- Focus highlight behind everything -->
+        <Rectangle
+            id="focusFrame"
+            translation="[0, 0]"
+            width="1600"
+            height="124"
+            color="0x211F3AFF"
+            visible="false" />
+        <Rectangle
+            id="focusAccent"
+            translation="[0, 0]"
+            width="6"
+            height="124"
+            color="0x7657FFFF"
+            visible="false" />
+
+        <!-- LEFT COLUMN: source badge / addon name / quality -->
+        <Label
+            id="sourceBadge"
+            translation="[30, 16]"
+            width="220"
+            height="30"
+            font="font:SmallBoldSystemFont"
+            color="0x9D86FFFF" />
+        <Label
+            id="addonName"
+            translation="[30, 48]"
+            width="220"
+            height="28"
+            font="font:SmallSystemFont"
+            color="0xC9C6D7FF" />
+        <Label
+            id="quality"
+            translation="[30, 78]"
+            width="220"
+            height="32"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+
+        <!-- RIGHT COLUMN: title (multi-line), then metadata icon row -->
+        <Label
+            id="title"
+            translation="[280, 16]"
+            width="1280"
+            height="60"
+            wrap="true"
+            maxLines="2"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+
+        <!-- Metadata row: seeders, size, tracker (initially invisible, positioned dynamically) -->
+        <Poster
+            id="seedsIcon"
+            translation="[280, 84]"
+            width="22"
+            height="22"
+            uri="pkg:/images/icon_seeds.png"
+            loadDisplayMode="scaleToFit"
+            visible="false" />
+        <Label
+            id="seeds"
+            translation="[308, 82]"
+            width="100"
+            height="26"
+            font="font:SmallSystemFont"
+            color="0xA9A6B8FF"
+            visible="false" />
+
+        <Poster
+            id="sizeIcon"
+            translation="[420, 84]"
+            width="22"
+            height="22"
+            uri="pkg:/images/icon_size.png"
+            loadDisplayMode="scaleToFit"
+            visible="false" />
+        <Label
+            id="size"
+            translation="[448, 82]"
+            width="150"
+            height="26"
+            font="font:SmallSystemFont"
+            color="0xA9A6B8FF"
+            visible="false" />
+
+        <Poster
+            id="trackerIcon"
+            translation="[610, 84]"
+            width="22"
+            height="22"
+            uri="pkg:/images/icon_tracker.png"
+            loadDisplayMode="scaleToFit"
+            visible="false" />
+        <Label
+            id="tracker"
+            translation="[638, 82]"
+            width="600"
+            height="26"
+            font="font:SmallSystemFont"
+            color="0xA9A6B8FF"
+            visible="false" />
+    </children>
+</component>

@@ -1,0 +1,24 @@
+# Build output
+dist/
+*.zip
+
+# Logs
+*.log
+
+# Node / npm
+node_modules/
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Roku
+*.pkg
+*.sign
+rokudeploy.json
+
+# Generated repo snapshot (contains a full stale copy of the codebase)
+repomix-output.xml

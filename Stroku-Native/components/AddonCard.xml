@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="AddonCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onStateChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/AddonCard.brs" />
+
+    <children>
+        <!-- Same idiom as SettingsRow: the frame sits behind the card so the two
+             read as a one-pixel accent border around the focused row. -->
+        <Rectangle
+            id="focusFrame"
+            width="968"
+            height="134"
+            color="0x7657FFFF"
+            visible="false" />
+        <Rectangle
+            id="card"
+            translation="[3, 3]"
+            width="962"
+            height="128"
+            color="0x1B1934FF" />
+        <Rectangle
+            id="accentBar"
+            translation="[3, 3]"
+            width="6"
+            height="128"
+            color="0x9D86FFFF"
+            visible="false" />
+
+        <!-- Stremio's web app shows a puzzle-piece placeholder when a manifest has
+             no logo. A tinted tile with the add-on's initial reads better at ten
+             feet than a repeated generic glyph, so the tile is the fallback and
+             the manifest logo is drawn over it when there is one. -->
+        <Rectangle
+            id="logoTile"
+            translation="[30, 25]"
+            width="84"
+            height="84"
+            color="0x272449FF" />
+        <Label
+            id="logoLetter"
+            translation="[30, 25]"
+            width="84"
+            height="84"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:LargeBoldSystemFont"
+            color="0x9D86FFFF" />
+        <Poster
+            id="logo"
+            translation="[30, 25]"
+            width="84"
+            height="84"
+            loadDisplayMode="scaleToFit"
+            visible="false" />
+
+        <Label
+            id="name"
+            translation="[140, 18]"
+            width="470"
+            height="40"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+        <Label
+            id="version"
+            translation="[620, 22]"
+            width="130"
+            height="32"
+            vertAlign="center"
+            font="font:SmallSystemFont"
+            color="0x6F6A8AFF" />
+        <Label
+            id="types"
+            translation="[140, 58]"
+            width="620"
+            height="28"
+            vertAlign="center"
+            font="font:SmallSystemFont"
+            color="0x9D86FFFF" />
+        <Label
+            id="description"
+            translation="[140, 88]"
+            width="620"
+            height="30"
+            vertAlign="center"
+            truncateOnDelimiter=" "
+            font="font:SmallSystemFont"
+            color="0x9895AAFF" />
+
+        <!-- Stremio puts an Uninstall button and a Share action on the right of
+             every card. A remote cannot move sideways inside a list row, so the
+             right-hand slot becomes a status pill and the actions live in the
+             detail dialog that OK opens. -->
+        <Rectangle
+            id="badgePill"
+            translation="[780, 44]"
+            width="152"
+            height="42"
+            color="0x2E9E76FF" />
+        <Label
+            id="badgeLabel"
+            translation="[780, 44]"
+            width="152"
+            height="42"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0xFFFFFFFF" />
+
+        <!-- Empty, loading and "load the collection" rows reuse the same slot. -->
+        <Label
+            id="messageLabel"
+            translation="[36, 3]"
+            width="890"
+            height="128"
+            vertAlign="center"
+            wrap="true"
+            maxLines="2"
+            font="font:MediumSystemFont"
+            color="0xB4B0C1FF"
+            visible="false" />
+    </children>
+</component>

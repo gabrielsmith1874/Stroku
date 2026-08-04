@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="EpisodeCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onFocusChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/Locale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/EpisodeCard.brs" />
+
+    <children>
+        <Rectangle
+            id="focusFrame"
+            width="1600"
+            height="174"
+            color="0x7657FFFF"
+            visible="false" />
+        <Rectangle
+            translation="[5, 5]"
+            width="1590"
+            height="164"
+            color="0x191733FF" />
+        <Poster
+            id="thumbnail"
+            translation="[14, 14]"
+            width="260"
+            height="146"
+            loadDisplayMode="scaleToZoom" />
+        <Rectangle
+            id="thumbnailScrim"
+            translation="[14, 14]"
+            width="260"
+            height="146"
+            color="0x080711CC"
+            visible="false" />
+        <Rectangle
+            id="progressBarBg"
+            translation="[14, 150]"
+            width="260"
+            height="10"
+            color="0x4A475BFF"
+            visible="false" />
+        <Rectangle
+            id="progressBarFill"
+            translation="[14, 150]"
+            width="0"
+            height="10"
+            color="0x8E73FFFF"
+            visible="false" />
+        <Label
+            id="number"
+            translation="[306, 18]"
+            width="70"
+            height="42"
+            font="font:MediumBoldSystemFont"
+            color="0x9D86FFFF" />
+        <Label
+            id="title"
+            translation="[372, 16]"
+            width="760"
+            height="46"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+        <Label
+            id="date"
+            translation="[1180, 18]"
+            width="360"
+            height="42"
+            horizAlign="right"
+            font="font:MediumSystemFont"
+            color="0xA9A6B8FF" />
+        <Label
+            id="description"
+            translation="[306, 68]"
+            width="1230"
+            height="88"
+            wrap="true"
+            maxLines="3"
+            font="font:SmallSystemFont"
+            color="0xB8B5C6FF" />
+    </children>
+</component>

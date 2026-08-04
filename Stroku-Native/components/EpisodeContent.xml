@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="EpisodeContent" extends="ContentNode">
+    <interface>
+        <field id="episodeLabel" type="string" />
+        <field id="progress" type="float" value="0.0" />
+    </interface>
+</component>

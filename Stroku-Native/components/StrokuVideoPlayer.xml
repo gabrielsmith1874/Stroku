@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="StrokuVideoPlayer" extends="Video">
+    <interface>
+        <field id="subtitleOptions" type="array" onChange="onSubtitleOptionsChanged" />
+        <field id="selectedSubtitleIndex" type="integer" value="-1" />
+        <field id="subtitlesEnabledByDefault" type="boolean" value="false" />
+        <field id="subtitleDefaultMode" type="string" value="Default language" />
+        <field id="defaultSubtitleLanguage" type="string" value="English" />
+        <field id="lastSubtitleSelection" type="string" value="off" />
+        <field id="defaultAudioTrack" type="string" value="English" />
+        <field id="subtitleRenderMode" type="string" value="Below video" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitleTextSize" type="string" value="Medium" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitleTextColor" type="string" value="White" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitleOutlineColor" type="string" value="White" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitleFont" type="string" value="Default" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitleBackdropOpacity" type="string" value="75%" onChange="onSubtitleStyleChanged" />
+        <field id="customSubtitlePosition" type="string" value="Bottom bar" onChange="onSubtitleStyleChanged" />
+        <field id="subtitleSyncOffset" type="float" value="0" onChange="onSubtitleSyncOffsetChanged" />
+        <field id="hasNextEpisode" type="boolean" value="false" />
+        <field id="action" type="assocarray" alwaysNotify="true" />
+        <function name="ApplyUiScale" />
+        <function name="ApplyLocale" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/Locale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/StrokuVideoPlayer.brs" />
+
+    <children>
+        <Timer id="hideTimer" duration="5" repeat="false" />
+
+        <!-- The Video node itself fills the screen; only these overlays are mapped
+             from 1920x1080 design space onto the device design resolution. -->
+        <Group id="playerUiRoot">
+        <Group id="customSubtitleGroup" visible="false">
+            <Rectangle
+                id="customSubtitleBackdrop"
+                translation="[560, 966]"
+                width="800"
+                height="54"
+                color="0x000000BF" />
+            <!-- Roku Labels have no stroke/outline property, so the outline is
+                 drawn as eight offset copies of the subtitle behind the fill
+                 label. They are declared before customSubtitleLabel so the fill
+                 always draws on top. Their offsets are applied at runtime
+                 through ScaleUi. -->
+            <Label
+                id="customSubtitleOutline0"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline1"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline2"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline3"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline4"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline5"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline6"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleOutline7"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0x000000FF" />
+            <Label
+                id="customSubtitleLabel"
+                translation="[250, 955]"
+                width="1420"
+                height="90"
+                horizAlign="center"
+                vertAlign="center"
+                wrap="true"
+                maxLines="3"
+                font="font:MediumBoldSystemFont"
+                color="0xFFFFFFFF" />
+        </Group>
+
+        <Group id="overlay" visible="false">
+            <Poster id="vignette" uri="pkg:/images/vignette.png" translation="[0, 568]" width="1920" height="512" opacity="1.0" />
+            
+            <Group id="progressGroup">
+                <Label
+                    id="titleLabel"
+                    translation="[100, 800]"
+                    width="1320"
+                    height="55"
+                    font="font:LargeBoldSystemFont"
+                    color="0xFFFFFFFF" />
+                <Rectangle
+                    id="progressBg"
+                    translation="[100, 960]"
+                    width="1720"
+                    height="6"
+                    color="0x4A475BFF" />
+                <Rectangle
+                    id="progressFill"
+                    translation="[100, 960]"
+                    width="0"
+                    height="6"
+                    color="0xFFFFFFFF" />
+                <Label
+                    id="timeLabel"
+                    translation="[1520, 990]"
+                    width="300"
+                    height="36"
+                    horizAlign="right"
+                    font="font:MediumSystemFont"
+                    color="0xC9C6D7FF" />
+            </Group>
+
+            <Group id="controlButtonsGroup">
+                <Group id="buttonFocus" translation="[100, 860]">
+                    <Rectangle id="buttonFocusTop" width="80" height="3" color="0xFFFFFFFF" />
+                    <Rectangle id="buttonFocusBottom" translation="[0, 77]" width="80" height="3" color="0xFFFFFFFF" />
+                    <Rectangle id="buttonFocusLeft" width="3" height="80" color="0xFFFFFFFF" />
+                    <Rectangle id="buttonFocusRight" translation="[77, 0]" width="3" height="80" color="0xFFFFFFFF" />
+                </Group>
+                
+                <!-- Main Row (Above Progress) -->
+                <Poster
+                    id="playButton"
+                    uri="pkg:/images/icon_pause.png"
+                    translation="[100, 860]"
+                    width="80"
+                    height="80" />
+                <Poster
+                    id="nextButton"
+                    uri="pkg:/images/icon_next.png"
+                    translation="[200, 860]"
+                    width="80"
+                    height="80" />
+
+                <!-- Secondary Row (Below Progress) -->
+                <Poster
+                    id="subtitleButton"
+                    uri="pkg:/images/icon_subtitles.png"
+                    translation="[100, 985]"
+                    width="50"
+                    height="50" />
+                <Poster
+                    id="speedButton"
+                    uri="pkg:/images/icon_settings.png"
+                    translation="[180, 985]"
+                    width="50"
+                    height="50" />
+                <Poster
+                    id="audioButton"
+                    uri="pkg:/images/icon_episodes.png"
+                    translation="[260, 985]"
+                    width="50"
+                    height="50" />
+            </Group>
+        </Group>
+
+        <Group id="scrubGroup" visible="false">
+            <Rectangle
+                id="scrubTooltip"
+                translation="[100, 870]"
+                width="320"
+                height="70"
+                color="0x000000CC">
+                <Label
+                    id="scrubTooltipTitle"
+                    translation="[10, 5]"
+                    width="300"
+                    height="30"
+                    horizAlign="center"
+                    font="font:SmallBoldSystemFont"
+                    color="0xFFFFFFFF" />
+                <Label
+                    id="scrubTooltipTime"
+                    translation="[10, 35]"
+                    width="300"
+                    height="30"
+                    horizAlign="center"
+                    font="font:SmallSystemFont"
+                    color="0xFFFFFFFF" />
+            </Rectangle>
+            <Rectangle
+                id="scrubCursor"
+                translation="[100, 973]"
+                width="4"
+                height="20"
+                color="0xFFFFFFFF"
+                visible="false" />
+        </Group>
+
+        <Group id="speedMenu" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000099" />
+            <Rectangle translation="[510, 160]" width="900" height="760" color="0x191733FA" />
+            <Rectangle translation="[510, 160]" width="10" height="760" color="0x7657FFFF" />
+            <Label
+                id="speedMenuTitle"
+                translation="[580, 210]"
+                width="760"
+                height="60"
+                text="Playback Speed"
+                font="font:LargeBoldSystemFont"
+                color="0xFFFFFFFF" />
+            <LabelList
+                id="speedList"
+                translation="[580, 310]"
+                width="760"
+                height="470"
+                itemSize="[760, 70]"
+                numRows="6"
+                color="0xC9C6D7FF"
+                focusedColor="0xFFFFFFFF"
+                focusBitmapBlendColor="0x7657FFFF" />
+        </Group>
+
+        <Group id="audioMenu" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000099" />
+            <Rectangle translation="[510, 160]" width="900" height="760" color="0x191733FA" />
+            <Rectangle translation="[510, 160]" width="10" height="760" color="0x7657FFFF" />
+            <Label
+                id="audioMenuTitle"
+                translation="[580, 210]"
+                width="760"
+                height="60"
+                text="Audio"
+                font="font:LargeBoldSystemFont"
+                color="0xFFFFFFFF" />
+            <LabelList
+                id="audioList"
+                translation="[580, 310]"
+                width="760"
+                height="470"
+                itemSize="[760, 70]"
+                numRows="6"
+                color="0xC9C6D7FF"
+                focusedColor="0xFFFFFFFF"
+                focusBitmapBlendColor="0x7657FFFF" />
+        </Group>
+
+        <Group id="subtitleMenu" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000099" />
+            <Rectangle translation="[510, 160]" width="900" height="760" color="0x191733FA" />
+            <Rectangle translation="[510, 160]" width="10" height="760" color="0x7657FFFF" />
+            <Label
+                id="subtitleMenuTitle"
+                translation="[580, 210]"
+                width="760"
+                height="60"
+                text="Subtitles"
+                font="font:LargeBoldSystemFont"
+                color="0xFFFFFFFF" />
+            <Label
+                id="subtitleSyncLabel"
+                translation="[580, 280]"
+                width="760"
+                height="42"
+                text="Sync: 0.0s"
+                horizAlign="center"
+                font="font:MediumBoldSystemFont"
+                color="0xFFFFFFFF" />
+            <LabelList
+                id="subtitleList"
+                translation="[580, 350]"
+                width="760"
+                height="430"
+                itemSize="[760, 70]"
+                numRows="6"
+                color="0xC9C6D7FF"
+                focusedColor="0xFFFFFFFF"
+                focusBitmapBlendColor="0x7657FFFF" />
+        </Group>
+        </Group>
+    </children>
+</component>

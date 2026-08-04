@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="CalendarCardContent" extends="ContentNode">
+    <interface>
+        <!-- "header", "episode", "message" or "cta". -->
+        <field id="rowKind" type="string" value="episode" />
+        <!-- Day number and short month of the air date, split for the date chip. -->
+        <field id="dayText" type="string" />
+        <field id="monthText" type="string" />
+        <field id="seriesName" type="string" />
+        <field id="metaText" type="string" />
+        <field id="thumbnailUrl" type="string" />
+        <!-- True for episodes airing today, which get the highlighted date chip. -->
+        <field id="accent" type="boolean" value="false" />
+        <field id="selectable" type="boolean" value="true" />
+    </interface>
+</component>

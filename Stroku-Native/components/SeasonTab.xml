@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="SeasonTab" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onStateChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/SeasonTab.brs" />
+
+    <children>
+        <Rectangle
+            id="pill"
+            width="220"
+            height="64"
+            color="0x28253EFF" />
+        <Label
+            id="label"
+            width="220"
+            height="64"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="0xB4B0C1FF" />
+    </children>
+</component>

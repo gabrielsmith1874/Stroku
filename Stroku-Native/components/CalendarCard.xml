@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="CalendarCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onStateChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/CalendarCard.brs" />
+
+    <children>
+        <!-- Drawn behind the card so the two together read as an accent border
+             around the focused row, the same way SettingsRow does it. -->
+        <Rectangle
+            id="focusFrame"
+            width="968"
+            height="118"
+            color="0x7657FFFF"
+            visible="false" />
+        <Rectangle
+            id="card"
+            translation="[3, 3]"
+            width="962"
+            height="112"
+            color="0x1B1934FF" />
+
+        <!-- The date chip is the calendar's identity: a tall block on the leading
+             edge carrying the day number over a short month. -->
+        <Rectangle
+            id="dateChip"
+            translation="[3, 3]"
+            width="112"
+            height="112"
+            color="0x241F45FF" />
+        <Label
+            id="dayLabel"
+            translation="[3, 16]"
+            width="112"
+            height="50"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:LargeBoldSystemFont"
+            color="0xFFFFFFFF" />
+        <Label
+            id="monthLabel"
+            translation="[3, 68]"
+            width="112"
+            height="32"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0x9D86FFFF" />
+
+        <Poster
+            id="thumbnail"
+            translation="[131, 12]"
+            width="168"
+            height="94"
+            loadDisplayMode="scaleToZoom" />
+
+        <Label
+            id="seriesLabel"
+            translation="[318, 12]"
+            width="560"
+            height="32"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0x9D86FFFF" />
+        <Label
+            id="titleLabel"
+            translation="[318, 44]"
+            width="560"
+            height="46"
+            vertAlign="center"
+            truncateOnDelimiter=" "
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF" />
+        <Label
+            id="metaLabel"
+            translation="[318, 88]"
+            width="560"
+            height="28"
+            vertAlign="center"
+            font="font:SmallSystemFont"
+            color="0xB4B0C1FF" />
+        <Label
+            id="chevron"
+            translation="[900, 0]"
+            width="48"
+            height="118"
+            text="&#8250;"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="0x6F6A8AFF" />
+
+        <!-- Section captions share the row slot: the card is hidden and the
+             caption sits on the rule that separates it from the rows below. -->
+        <Label
+            id="headerLabel"
+            translation="[6, 54]"
+            width="700"
+            height="48"
+            vertAlign="center"
+            font="font:SmallBoldSystemFont"
+            color="0x9D86FFFF"
+            visible="false" />
+        <Rectangle
+            id="headerRule"
+            translation="[6, 108]"
+            width="956"
+            height="2"
+            color="0x27244AFF"
+            visible="false" />
+
+        <!-- Inert copy: empty states and the signed-out explanation. -->
+        <Label
+            id="messageLabel"
+            translation="[30, 0]"
+            width="908"
+            height="118"
+            vertAlign="center"
+            wrap="true"
+            maxLines="2"
+            font="font:MediumSystemFont"
+            color="0xC9C6D7FF"
+            visible="false" />
+
+        <!-- The one focusable row of the signed-out screen, drawn as a button. -->
+        <Rectangle
+            id="ctaPill"
+            translation="[30, 24]"
+            width="320"
+            height="70"
+            color="0x7657FFFF"
+            visible="false" />
+        <Label
+            id="ctaLabel"
+            translation="[30, 24]"
+            width="320"
+            height="70"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFFFF"
+            visible="false" />
+    </children>
+</component>

@@ -1,0 +1,24 @@
+{
+  "name": "stroku-native",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Native Roku client for Stremio addons and debrid streams",
+  "scripts": {
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1",
+    "package:pkg": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-pkg.ps1",
+    "test": "npm run test:placeholders && npm run test:layout && npm run test:uiscale && npm run test:localization",
+    "test:localization": "node tests/check_localization.mjs",
+    "test:placeholders": "node tests/check_placeholder_implementations.mjs",
+    "test:layout": "node tests/check_layout_safe_area.mjs",
+    "test:uiscale": "node tests/check_ui_scale.mjs",
+    "screenshots:layout": "node tests/capture_layout_resolutions.mjs",
+    "screenshots:layout-review": "node tests/render_resolution_review.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.62.1",
+    "pngjs": "^7.0.0",
+    "qrcode": "^1.5.4"
+  }
+}

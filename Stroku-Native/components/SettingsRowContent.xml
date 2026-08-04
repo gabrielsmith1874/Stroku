@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="SettingsRowContent" extends="ContentNode">
+    <interface>
+        <!-- "header", "option", "toggle", "action" or "info". -->
+        <field id="rowKind" type="string" value="option" />
+        <field id="value" type="string" />
+        <field id="hint" type="string" />
+        <field id="selectable" type="boolean" value="true" />
+        <!-- Canonical state for rowKind="toggle". The pill reads this, not the
+             translated text in "value". -->
+        <field id="toggleOn" type="boolean" value="false" />
+    </interface>
+</component>

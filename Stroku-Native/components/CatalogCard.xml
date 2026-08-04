@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component name="CatalogCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onContentChanged" />
+        <field id="itemHasFocus" type="boolean" onChange="onFocusChanged" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/UiScale.brs" />
+    <script type="text/brightscript" uri="pkg:/components/CatalogCard.brs" />
+
+    <children>
+        <Rectangle
+            id="focusFrame"
+            width="168"
+            height="246"
+            color="0x7657FFFF"
+            visible="false" />
+        <Poster
+            id="poster"
+            translation="[5, 5]"
+            width="158"
+            height="236"
+            loadDisplayMode="scaleToZoom" />
+        <Rectangle
+            id="progressBarBg"
+            translation="[5, 235]"
+            width="158"
+            height="6"
+            color="0x4A475BFF"
+            visible="false" />
+        <Rectangle
+            id="progressBarFill"
+            translation="[5, 235]"
+            width="0"
+            height="6"
+            color="0x8E73FFFF"
+            visible="false" />
+        <Label
+            id="title"
+            translation="[0, 252]"
+            width="168"
+            height="48"
+            horizAlign="center"
+            vertAlign="top"
+            wrap="true"
+            maxLines="2"
+            font="font:SmallSystemFont"
+            color="0xF5F3FFFF" />
+    </children>
+</component>
