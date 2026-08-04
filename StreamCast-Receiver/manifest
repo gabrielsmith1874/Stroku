@@ -1,0 +1,17 @@
+title=Stroku Bridge
+major_version=1
+minor_version=0
+build_version=7
+mm_icon_focus_hd=pkg:/images/icon_hd.png
+mm_icon_focus_sd=pkg:/images/icon_sd.png
+ui_resolutions=hd,fhd,uhd
+splash_screen_hd=pkg:/images/splash_hd.png
+splash_color=#0F0F23
+supports_input_launch=1
+supports_http_server=1
+supports_direct_to_play=1
+supports_deep_linking=1
+supports_media_types=movie,episode,season,series,shortFormVideo,tvSpecial,video,audio,live
+channel_category=streaming
+content_rating=Unrated
+rsg_version=1.2

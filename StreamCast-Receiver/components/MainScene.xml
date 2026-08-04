@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+    
+    <children>
+        <!-- Modern gradient background -->
+        <Rectangle id="background" 
+                   translation="[0, 0]"
+                   width="1920" 
+                   height="1080" 
+                   color="0x0F0F23FF" />
+        
+        <!-- App title with modern typography -->
+        <Label id="appTitle"
+               translation="[960, 80]"
+               width="1400"
+               height="60"
+               text="Stroku Receiver"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:LargeBoldSystemFont"
+               color="0xFFFFFFFF" />
+        
+        <!-- Subtitle -->
+        <Label id="appSubtitle"
+               translation="[960, 135]"
+               width="1400"
+               height="40"
+               text="Stream content from Stremio to your Roku device"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:MediumSystemFont"
+               color="0xB3B3CCFF" />
+        
+        <!-- Main status card (Container) -->
+        <Rectangle id="statusCard"
+                   translation="[260, 240]"
+                   width="1400"
+                   height="540"
+                   color="0x1E1E38FF"
+                   opacity="0.95" />
+        
+        <!-- Status indicator circle -->
+        <Rectangle id="statusIndicator"
+                   translation="[940, 285]"
+                   width="40"
+                   height="40"
+                   color="0x4CAF50FF" />
+        
+        <!-- Status text - main message -->
+        <Label id="statusLabel"
+               translation="[960, 345]"
+               width="1300"
+               height="60"
+               text="Ready to receive streams"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:LargeBoldSystemFont"
+               color="0xFFFFFFFF" />
+        
+        <!-- Instructions text -->
+        <Label id="instructionsLabel"
+               translation="[960, 410]"
+               width="1300"
+               height="50"
+               text="Use your Android app to cast Stremio content to this device"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:MediumSystemFont"
+               color="0xB3B3CCFF" />
+        
+        <!-- IP Address display -->
+        <Label id="ipLabel"
+               translation="[960, 490]"
+               width="1200"
+               height="40"
+               text="Device IP: Loading..."
+               horizAlign="center"
+               vertAlign="center"
+               font="font:MediumBoldSystemFont"
+               color="0x9966FFFF" />
+        
+        <!-- Network status -->
+        <Label id="networkStatus"
+               translation="[960, 535]"
+               width="1200"
+               height="30"
+               text="Connected to your network"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0x8080A0FF" />
+        
+        <!-- Step by step instructions -->
+        <Label id="step1Label"
+               translation="[960, 600]"
+               width="1000"
+               height="30"
+               text="1. Ensure your Roku and phone are on the same WiFi network"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0xB3B3CCFF" />
+        
+        <Label id="step2Label"
+               translation="[960, 635]"
+               width="1000"
+               height="30"
+               text="2. Open Stremio on your Android device"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0xB3B3CCFF" />
+        
+        <Label id="step3Label"
+               translation="[960, 670]"
+               width="1000"
+               height="30"
+               text="3. Use 'Play with External App' to cast content here"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0xB3B3CCFF" />
+        
+        <Label id="controlsLabel"
+               translation="[960, 725]"
+               width="1000"
+               height="25"
+               text="Press BACK button to stop video playback"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0x8080A0FF" />
+        
+        <!-- Disclaimer at bottom (outside card) -->
+        <Label id="disclaimerLabel"
+               translation="[960, 840]"
+               width="1600"
+               height="100"
+               text="Check out Stroku Native for a native Roku experience! Note: Stroku Native requires Real-Debrid, and support for addons other than Torrentio has not been tested."
+               horizAlign="center"
+               wrap="true"
+               font="font:SmallSystemFont"
+               color="0x9966FFFF" />
+        
+        <!-- Version info at bottom -->
+        <Label id="versionLabel"
+               translation="[960, 980]"
+               width="1600"
+               height="30"
+               text="Stremio Bridge v1.0.1 • Supports HLS, MP4, DASH, MKV streams"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0x555555FF" />
+        
+        <!-- Video player (hidden initially) -->
+        <Video id="videoPlayer"
+               translation="[0, 0]"
+               width="1920"
+               height="1080"
+               visible="false" />
+        
+        <!-- Modern loading animation -->
+        <BusySpinner id="loadingSpinner"
+                      translation="[960, 540]"
+                      visible="false" />
+        
+        <!-- Loading text -->
+        <Label id="loadingLabel"
+               translation="[960, 620]"
+               width="800"
+               height="40"
+               text="Loading stream..."
+               horizAlign="center"
+               vertAlign="center"
+               font="font:MediumSystemFont"
+               color="0xFFFFFFFF"
+               visible="false" />
+        
+        <!-- Modern error card -->
+        <Rectangle id="errorCard"
+                    translation="[320, 420]"
+                    width="1280"
+                    height="240"
+                    color="0xF44336FF"
+                    opacity="0.95"
+                    visible="false" />
+        
+        <Label id="errorTitle"
+               translation="[960, 480]"
+               width="1200"
+               height="40"
+               text="Connection Error"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:LargeBoldSystemFont"
+               color="0xFFFFFFFF"
+               visible="false" />
+        
+        <Label id="errorLabel"
+               translation="[960, 540]"
+               width="1200"
+               height="80"
+               text="Error message will appear here"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:MediumSystemFont"
+               color="0xFFFFFFFF"
+               visible="false" />
+        
+        <Label id="errorInstructions"
+               translation="[960, 620]"
+               width="1200"
+               height="30"
+               text="Press BACK to dismiss this error and try again"
+               horizAlign="center"
+               vertAlign="center"
+               font="font:SmallSystemFont"
+               color="0xFFFFFFFF"
+               visible="false" />
+    </children>
+    
+    <interface>
+        <function name="StartBridgeListener" />
+        <function name="HandleECPStream" />
+        <function name="ShowError" />
+        <function name="ShowLoading" />
+        <function name="ShowReady" />
+        <function name="InitializeDisplay" />
+        <function name="SetTheme" />
+        <function name="HandleVoiceContentRequest" />
+        <function name="HandleVoiceCommandError" />
+        <function name="ShowVoiceCommandHelp" />
+        <function name="ShowInputReceived" />
+        <function name="HandleInputRequest" />
+        <function name="HandleDeepLinkRequest" />
+        <function name="HandleDeepLinkError" />
+        <function name="HandleRokuDeepLinkRequest" />
+        <function name="HandleInvalidDeepLink" />
+    </interface>
+</component>
