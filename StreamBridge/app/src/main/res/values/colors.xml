@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Stremio Brand Colors -->
+    <color name="stremio_purple">#6441A5</color>
+    <color name="stremio_purple_dark">#4A2F7A</color>
+    <color name="stremio_purple_light">#8A5FD3</color>
+    <color name="stremio_accent">#9966FF</color>
+    
+    <!-- Light Theme Colors -->
+    <color name="light_primary">#6441A5</color>
+    <color name="light_primary_dark">#4A2F7A</color>
+    <color name="light_primary_light">#8A5FD3</color>
+    <color name="light_accent">#9966FF</color>
+    
+    <color name="light_background">#FFFFFF</color>
+    <color name="light_surface">#F8F9FA</color>
+    <color name="light_surface_variant">#F1F3F4</color>
+    <color name="light_card">#FFFFFF</color>
+    
+    <color name="light_text_primary">#1F1F1F</color>
+    <color name="light_text_secondary">#5F6368</color>
+    <color name="light_text_hint">#9AA0A6</color>
+    <color name="light_text_on_primary">#FFFFFF</color>
+    
+    <color name="light_outline">#DADCE0</color>
+    <color name="light_outline_variant">#E8EAED</color>
+    
+    <!-- Dark Theme Colors -->
+    <color name="dark_primary">#8A5FD3</color>
+    <color name="dark_primary_dark">#6441A5</color>
+    <color name="dark_primary_light">#A87FE0</color>
+    <color name="dark_accent">#B085FF</color>
+    
+    <color name="dark_background">#0F0F23</color>
+    <color name="dark_surface">#1A1A2E</color>
+    <color name="dark_surface_variant">#252541</color>
+    <color name="dark_card">#252541</color>
+    
+    <color name="dark_text_primary">#FFFFFF</color>
+    <color name="dark_text_secondary">#B3B3CC</color>
+    <color name="dark_text_hint">#8080A0</color>
+    <color name="dark_text_on_primary">#FFFFFF</color>
+    
+    <color name="dark_outline">#44446B</color>
+    <color name="dark_outline_variant">#32325A</color>
+    
+    <!-- Status Colors (same for both themes) -->
+    <color name="success">#4CAF50</color>
+    <color name="success_dark">#45A049</color>
+    <color name="warning">#FF9800</color>
+    <color name="warning_dark">#F57C00</color>
+    <color name="error">#F44336</color>
+    <color name="error_dark">#D32F2F</color>
+    
+    <!-- Adaptive colors that change based on theme -->
+    <color name="adaptive_primary">@color/light_primary</color>
+    <color name="adaptive_primary_dark">@color/light_primary_dark</color>
+    <color name="adaptive_primary_light">@color/light_primary_light</color>
+    <color name="adaptive_accent">@color/light_accent</color>
+    
+    <color name="adaptive_background">@color/light_background</color>
+    <color name="adaptive_surface">@color/light_surface</color>
+    <color name="adaptive_surface_variant">@color/light_surface_variant</color>
+    <color name="adaptive_card">@color/light_card</color>
+    
+    <color name="adaptive_text_primary">@color/light_text_primary</color>
+    <color name="adaptive_text_secondary">@color/light_text_secondary</color>
+    <color name="adaptive_text_hint">@color/light_text_hint</color>
+    <color name="adaptive_text_on_primary">@color/light_text_on_primary</color>
+    
+    <color name="adaptive_outline">@color/light_outline</color>
+    <color name="adaptive_outline_variant">@color/light_outline_variant</color>
+    
+    <!-- Basic Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    
+    <!-- Legacy support -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+</resources>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="4dp"
+    style="@style/Widget.Stremio.Card"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <!-- Device Icon Container -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/adaptive_surface_variant"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_roku"
+                android:layout_gravity="center"
+                app:tint="@color/adaptive_primary" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Device Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/deviceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Roku Device"
+                android:textAppearance="@style/TextAppearance.Stremio.Body1"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/deviceModel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Roku Ultra"
+                android:textAppearance="@style/TextAppearance.Stremio.Body2"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/deviceIp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="192.168.1.100"
+                android:textAppearance="@style/TextAppearance.Stremio.Caption" />
+
+        </LinearLayout>
+
+        <!-- Status and Send Button -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center_vertical">
+
+            <!-- Status Indicator -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <View
+                    android:id="@+id/statusIndicator"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/status_indicator_online"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/deviceStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Online"
+                    android:textAppearance="@style/TextAppearance.Stremio.Caption"
+                    android:textColor="@color/success" />
+
+            </LinearLayout>
+
+            <!-- Send Button (initially hidden) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sendButton"
+                style="@style/Widget.Stremio.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:text="Send"
+                android:textSize="12sp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
+                android:visibility="gone"
+                android:minWidth="80dp"
+                app:cornerRadius="22dp"
+                app:icon="@drawable/ic_play"
+                app:iconSize="14dp"
+                app:iconPadding="4dp"
+                app:iconGravity="textStart" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

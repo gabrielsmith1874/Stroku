@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night mode specific color overrides -->
+    <!-- These will automatically be used when device is in dark mode -->
+    
+    <!-- Stremio Brand Colors (consistent across themes) -->
+    <color name="stremio_purple">#6441A5</color>
+    <color name="stremio_purple_dark">#4A2F7A</color>
+    <color name="stremio_purple_light">#8A5FD3</color>
+    <color name="stremio_accent">#9966FF</color>
+    
+    <!-- Theme-specific colors that adapt automatically -->
+    <color name="adaptive_primary">@color/dark_primary</color>
+    <color name="adaptive_primary_dark">@color/dark_primary_dark</color>
+    <color name="adaptive_primary_light">@color/dark_primary_light</color>
+    <color name="adaptive_accent">@color/dark_accent</color>
+    
+    <color name="adaptive_background">@color/dark_background</color>
+    <color name="adaptive_surface">@color/dark_surface</color>
+    <color name="adaptive_surface_variant">@color/dark_surface_variant</color>
+    <color name="adaptive_card">@color/dark_card</color>
+    
+    <color name="adaptive_text_primary">@color/dark_text_primary</color>
+    <color name="adaptive_text_secondary">@color/dark_text_secondary</color>
+    <color name="adaptive_text_hint">@color/dark_text_hint</color>
+    <color name="adaptive_text_on_primary">@color/dark_text_on_primary</color>
+    
+    <color name="adaptive_outline">@color/dark_outline</color>
+    <color name="adaptive_outline_variant">@color/dark_outline_variant</color>
+</resources>
