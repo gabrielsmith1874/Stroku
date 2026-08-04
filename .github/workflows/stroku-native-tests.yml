@@ -3,13 +3,7 @@ name: Stroku Native tests
 on:
   push:
     branches: [main]
-    paths:
-      - "Stroku-Native/**"
-      - ".github/workflows/stroku-native-tests.yml"
   pull_request:
-    paths:
-      - "Stroku-Native/**"
-      - ".github/workflows/stroku-native-tests.yml"
 
 permissions:
   contents: read
