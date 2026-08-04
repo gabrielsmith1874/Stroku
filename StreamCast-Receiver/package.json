@@ -15,7 +15,7 @@
     "test:short": "node manual-test-runner.js shortFormVideo test_short_006 \"Test Short Video\"",
     "test:special": "node manual-test-runner.js tvSpecial test_special_007 \"Test TV Special\"",
     "roku:status": "node manual-test-runner.js",
-    "roku:config": "echo Roku IP: 10.0.0.243, App ID: dev",
+    "roku:config": "echo Roku IP: YOUR_ROKU_IP, App ID: dev",
     "roku:setup": "echo Setup complete - run npm run test:roku"
   },
   "devDependencies": {},

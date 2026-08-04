@@ -199,8 +199,7 @@ class RokuService {
             val ipRanges = listOf(
                 "$localNetwork.1-254", // Most common home networks
                 "192.168.1.1-254",     // Common router default
-                "192.168.0.1-254",     // Common router default
-                "10.0.0.1-254"         // Some router defaults
+                "192.168.0.1-254"      // Common router default
             )
         
         for (ipRange in ipRanges) {
