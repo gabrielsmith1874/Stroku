@@ -2287,16 +2287,16 @@ function AddonBaseUrl(url as string) as string
 end function
 
 sub FetchCatalog(contentType as string, rowIndex as integer)
-    url = "https://v3-cinemeta.strem.io/catalog/" + contentType + "/top.json"
+    url = "https://cinemeta-catalogs.strem.io/top/catalog/" + contentType + "/top.json"
     StartRequest(url, "boardCatalog|" + rowIndex.ToStr())
 end sub
 
 sub FetchBoardCatalogs()
     urls = [
-        "https://v3-cinemeta.strem.io/catalog/movie/top.json"
-        "https://v3-cinemeta.strem.io/catalog/series/top.json"
-        "https://v3-cinemeta.strem.io/catalog/movie/imdbRating.json"
-        "https://v3-cinemeta.strem.io/catalog/series/imdbRating.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/movie/top.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/series/top.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/movie/imdbRating.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/series/imdbRating.json"
         "https://v3-channels.strem.io/catalog/channel/top.json"
         "https://caching.stremio.net/publicdomainmovies.now.sh/catalog/movie/publicdomainmovies.json"
     ]
@@ -2338,7 +2338,7 @@ function DiscoverCatalogUrl() as string
     if m.discoverGenre <> "None" and m.discoverGenre <> "Genre"
         extra = "/genre=" + EncodeUrlComponent(m.discoverGenre)
     end if
-    return "https://v3-cinemeta.strem.io/catalog/" + m.discoverType + "/" + catalogId + extra + ".json"
+    return "https://cinemeta-catalogs.strem.io/top/catalog/" + m.discoverType + "/" + catalogId + extra + ".json"
 end function
 
 sub SearchCatalogs(query as string)
@@ -2382,8 +2382,8 @@ sub SearchCatalogs(query as string)
     m.searchPrompt.text = "Results for " + Chr(34) + query + Chr(34)
     SetActiveTab("discover", true)
     ShowStatus(TrText("status.search.searchingCatalogs"), true)
-    StartRequest("https://v3-cinemeta.strem.io/catalog/movie/top/search=" + encodedQuery + ".json", "search|0")
-    StartRequest("https://v3-cinemeta.strem.io/catalog/series/top/search=" + encodedQuery + ".json", "search|1")
+    StartRequest("https://cinemeta-catalogs.strem.io/top/catalog/movie/top/search=" + encodedQuery + ".json", "search|0")
+    StartRequest("https://cinemeta-catalogs.strem.io/top/catalog/series/top/search=" + encodedQuery + ".json", "search|1")
     StartRequest("https://v3-channels.strem.io/catalog/channel/top/search=" + encodedQuery + ".json", "search|2")
 end sub
 
