@@ -2287,16 +2287,16 @@ function AddonBaseUrl(url as string) as string
 end function
 
 sub FetchCatalog(contentType as string, rowIndex as integer)
-    url = "https://v3-cinemeta.strem.io/catalog/" + contentType + "/top.json"
+    url = "https://cinemeta-catalogs.strem.io/top/catalog/" + contentType + "/top.json"
     StartRequest(url, "boardCatalog|" + rowIndex.ToStr())
 end sub
 
 sub FetchBoardCatalogs()
     urls = [
-        "https://v3-cinemeta.strem.io/catalog/movie/top.json"
-        "https://v3-cinemeta.strem.io/catalog/series/top.json"
-        "https://v3-cinemeta.strem.io/catalog/movie/imdbRating.json"
-        "https://v3-cinemeta.strem.io/catalog/series/imdbRating.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/movie/top.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/series/top.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/movie/imdbRating.json"
+        "https://cinemeta-catalogs.strem.io/top/catalog/series/imdbRating.json"
         "https://v3-channels.strem.io/catalog/channel/top.json"
         "https://caching.stremio.net/publicdomainmovies.now.sh/catalog/movie/publicdomainmovies.json"
     ]
@@ -2338,7 +2338,7 @@ function DiscoverCatalogUrl() as string
     if m.discoverGenre <> "None" and m.discoverGenre <> "Genre"
         extra = "/genre=" + EncodeUrlComponent(m.discoverGenre)
     end if
-    return "https://v3-cinemeta.strem.io/catalog/" + m.discoverType + "/" + catalogId + extra + ".json"
+    return "https://cinemeta-catalogs.strem.io/top/catalog/" + m.discoverType + "/" + catalogId + extra + ".json"
 end function
 
 sub SearchCatalogs(query as string)
@@ -2446,7 +2446,20 @@ sub onHttpResponse(event as object)
     end if
 
     if not response.ok
-        if requestType = "catalog" or requestType = "search" or requestType = "boardCatalog" or requestType = "discoverCatalog"
+        if requestType = "search"
+            rowIndex = Val(parts[1])
+            print "[Stroku] Search provider failed row "; rowIndex; ": "; response.error
+            if rowIndex >= 0 and rowIndex < m.discoverRows.Count() then m.discoverRows[rowIndex] = []
+            if m.activeTab = "discover"
+                m.catalogRows = m.discoverRows
+                m.catalogNames = m.discoverNames
+                m.discoverGrid.visible = false
+                m.discoverFilterGroup.visible = false
+                m.catalogList.visible = true
+                m.catalogList.translation = ScaleUiXY(260, 164)
+                RebuildCatalog()
+            end if
+        else if requestType = "catalog" or requestType = "boardCatalog" or requestType = "discoverCatalog"
             if requestType = "discoverCatalog" then m.discoverRequestActive = false
             ShowStatus(response.error, false)
         else if requestType = "config"
@@ -2610,14 +2623,29 @@ sub HandleCatalogResponse(data as object, rowIndex as integer, target as string)
             m.catalogRows = m.boardRows
             RebuildCatalog()
         end if
-    else if target = "discover" or target = "search"
-        if target = "discover" or target = "search" then m.discoverRequestActive = false
+    else if target = "discover"
+        m.discoverRequestActive = false
         if rowIndex >= 0 and rowIndex < m.discoverRows.Count()
             m.discoverRows[rowIndex] = items
         end if
         if m.activeTab = "discover"
             m.catalogRows = m.discoverRows
             RebuildDiscoverGrid()
+        end if
+    else if target = "search"
+        m.discoverRequestActive = false
+        if rowIndex >= 0 and rowIndex < m.discoverRows.Count()
+            m.discoverRows[rowIndex] = items
+        end if
+        if m.activeTab = "discover"
+            m.catalogRows = m.discoverRows
+            m.catalogNames = m.discoverNames
+            m.discoverGrid.visible = false
+            m.discoverFilterGroup.visible = false
+            m.catalogList.visible = true
+            m.catalogList.translation = ScaleUiXY(260, 164)
+            RebuildCatalog()
+            m.catalogList.SetFocus(true)
         end if
     end if
 end sub
